@@ -8,13 +8,15 @@ module.exports = function timestamp(schema) {
 
   // Create a pre-save hook
   schema.pre('save', function (next) {
-    let now = Date.now()
-   
+    let now = new Date()
+    
     this.updated_on = now
     // Set a value for created_on only if it is null
     if (!this.created_on) {
       this.created_on = now
     }
+
+
    // Call the next function (if any) in the pre-save chain
    next()    
   })
