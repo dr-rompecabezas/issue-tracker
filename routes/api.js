@@ -1,4 +1,5 @@
 'use strict';
+const IssueModel = require('../models/issue.model.js')
 
 module.exports = function (app) {
 
