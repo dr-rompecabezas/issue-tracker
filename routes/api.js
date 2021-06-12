@@ -14,7 +14,7 @@ module.exports = function (app) {
     // POST => Create new issue
     .post(function (req, res){
       if (!req.body.issue_title || !req.body.issue_text || !req.body.created_by) {
-        return res.status(400).send('Required field(s) missing')
+        return res.status(400).send({ error: 'required field(s) missing' })
       }
 
       const project = req.params.project
@@ -26,8 +26,6 @@ module.exports = function (app) {
         if (!doc || doc.length === 0) {
           return res.status(500).send(doc)
         }
-        
-        // res.status(200).json(doc)
         
         res.status(200).json({
           _id: doc._id,
