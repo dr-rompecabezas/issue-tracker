@@ -122,7 +122,6 @@ module.exports = function (app) {
 
       IssueModel.findOneAndUpdate({ project, _id }, update, { new: true }, (err, doc) => {
         if (!doc) {
-          console.log(err)
           res.status(200).send({
             error: "could not update",
             _id: _id
@@ -147,7 +146,6 @@ module.exports = function (app) {
 
       IssueModel.findOneAndDelete({ project, _id }, (err, doc) => {
         if (!doc) {
-          console.log(err)
           res.status(200).send({
             error: "could not delete",
             _id: _id
