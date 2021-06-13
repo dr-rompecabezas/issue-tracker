@@ -20,8 +20,8 @@ module.exports = function (app) {
       if (req.query.assigned_to) {
         filter.assigned_to = req.query.assigned_to
       }
-      if (req.query.requested_by) {
-        filter.requested_by = req.query.requested_by
+      if (req.query.created_by) {
+        filter.created_by = req.query.created_by
       }
       if (req.query.issue_title) {
         filter.issue_title = req.query.issue_title
