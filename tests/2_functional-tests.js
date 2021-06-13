@@ -187,7 +187,7 @@ suite('Functional Tests', function () {
       })
   })
   // #11 Update an issue with an invalid _id: PUT request to /api/issues/{project}
-  test('PUT request with imvalid _id', function (done) {
+  test('PUT request with invalid _id', function (done) {
     chai
       .request(server)
       .put("/api/issues/chaitest")

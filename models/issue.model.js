@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const timestampPlugin = require('./plugins/timestamp')
+// const timestampPlugin = require('./plugins/timestamp')
 
 // Schema
 const IssueSchema = new mongoose.Schema({
@@ -10,10 +10,10 @@ const IssueSchema = new mongoose.Schema({
   assigned_to: { type: String, default: "" },
   open: { type: Boolean, default: true },
   status_text: { type: String, default: "" }
-})
+}, { timestamps: { createdAt: 'created_on', updatedAt: 'updated_on' } })
 
-// Add timestamp from pre-save plugin
-IssueSchema.plugin(timestampPlugin)
+// // Add timestamp from pre-save plugin
+// IssueSchema.plugin(timestampPlugin)
 
 // Export Model Constructor
 module.exports = mongoose.model('Issue', IssueSchema)

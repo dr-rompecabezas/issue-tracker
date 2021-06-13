@@ -83,6 +83,7 @@ module.exports = function (app) {
       if (!req.body._id) {
         return res.status(200).send({ error: 'missing _id' })
       }
+      const project = req.params.project;
 
       const _id = req.body._id
       const update = {}
@@ -113,10 +114,16 @@ module.exports = function (app) {
         })
       }
 
-      IssueModel.findByIdAndUpdate(_id, update, { new: true }, (err, doc) => {
-        if (err) return console.log(err)
-
-        res.status(200).send({ result: 'successfully updated', _id: doc._id })
+      IssueModel.findOneAndUpdate({ project, _id }, update, { new: true }, (err, doc) => {
+        if (!doc) {
+          console.log(err)
+          res.status(200).send({
+            error: "could not update",
+            _id: _id
+          })
+        } else {
+          res.status(200).send({ result: 'successfully updated', _id: doc._id })
+        }
       })
 
         .catch(err => {
