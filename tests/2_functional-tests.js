@@ -1,13 +1,12 @@
 const chaiHttp = require('chai-http');
 const chai = require('chai');
 const assert = chai.assert;
-// const expect = chai.expect;
 const server = require('../server');
 const IssueModel = require('../models/issue.model.js')
 
 chai.use(chaiHttp);
 
-// Test Objects
+// For POST test
 const detailedIssue = new IssueModel({
   issue_title: "Chai Test I",
   issue_text: "This is a Chai test with all fields",
@@ -17,29 +16,35 @@ const detailedIssue = new IssueModel({
   status_text: "Closed"
 })
 
+// For POST test
 const requiredFieldsIssue = new IssueModel({
   issue_title: "Chai Test II",
   issue_text: "This is a Chai test with only the required fields",
   created_by: "API Developer",
 })
 
+// For POST test
 const incompleteIssue = new IssueModel({
   status_text: "Unresolved"
 })
 
-const singleFieldUpdate = {
-  _id: "60c4011812dddb0c5da5347b",
+// For PUT test, takes _id from POST test #2
+const singleFieldUpdate = { 
   open: true
 }
 
-const multiFieldUpdate = {
-  _id: "60c4011812dddb0c5da5347b",
+// For PUT test, takes _id from POST test #2
+const multiFieldUpdate = { 
   open: false,
   issue_title: "Update Test",
   issue_text: "updated field"
 }
 
-const idOnly = {_id: "60c4011812dddb0c5da5347b"}
+// For PUT test, takes _id from POST test #2
+const idOnly = { } 
+
+// For DELETE test, takes _id from POST test #1
+const deleteIssue = { } 
 
 
 // Test Suite
@@ -60,6 +65,7 @@ suite('Functional Tests', function () {
         assert.equal(res.body.assigned_to, "Adam Nobody")
         assert.equal(res.body.status_text, "Closed")
         assert.isBoolean(res.body.open)
+        deleteIssue._id = res.body._id
 
         done();
       })
@@ -76,6 +82,9 @@ suite('Functional Tests', function () {
         assert.equal(res.body.issue_title, "Chai Test II")
         assert.equal(res.body.issue_text, "This is a Chai test with only the required fields")
         assert.equal(res.body.created_by, "API Developer")
+        singleFieldUpdate._id = res.body._id
+        multiFieldUpdate._id = res.body._id
+        idOnly._id = res.body._id
 
         done();
       })
@@ -201,7 +210,45 @@ suite('Functional Tests', function () {
       })
   })
   // #12 Delete an issue: DELETE request to /api/issues/{project}
-  // #13 Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
-  // #14 Delete an issue with missing _id: DELETE request to /api/issues/{project}
+  test('DEL an issue', function (done) {
+    chai
+      .request(server)
+      .delete("/api/issues/chaitest")
+      .send(deleteIssue)
+      .end((err, res) => {
+        assert.equal(res.status, 200)
+        assert.equal(res.type, "application/json")
+        assert.equal(res.body.result, "successfully deleted")
 
+        done()
+      })
+  })
+  // #13 Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
+  test('DEL an issue with invalid _id', function (done) {
+    chai
+      .request(server)
+      .delete("/api/issues/chaitest")
+      .send(deleteIssue)
+      .end((err, res) => {
+        assert.equal(res.status, 200)
+        assert.equal(res.type, "application/json")
+        assert.equal(res.body.error, "could not delete")
+
+        done()
+      })
+  })
+  // #14 Delete an issue with missing _id: DELETE request to /api/issues/{project}
+  test('DEL an issue with missing _id', function (done) {
+    chai
+      .request(server)
+      .delete("/api/issues/chaitest")
+      .send({})
+      .end((err, res) => {
+        assert.equal(res.status, 200)
+        assert.equal(res.type, "application/json")
+        assert.equal(res.body.error, "missing _id")
+
+        done()
+      })
+  })
 });
