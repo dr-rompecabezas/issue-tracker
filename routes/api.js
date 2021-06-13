@@ -5,8 +5,8 @@ module.exports = function (app) {
 
   app.route('/api/issues/:project')
 
-    // GET an array of all issues for a :project parameter,
-    // with all the fields present for each issue
+    // GET an array of all issues for a :project parameter
+    // Optionally, filter the request by also passing along any field and value as a URL query
     .get(function (req, res) {
       const project = req.params.project;
       const filter = { project }
@@ -31,6 +31,12 @@ module.exports = function (app) {
       }
       if (req.query.status_text) {
         filter.status_text = req.query.status_text
+      }
+      if (req.query.created_on) {
+        filter.created_on = req.query.created_on
+      }
+      if (req.query.updated_on) {
+        filter.updated_on = req.query.updated_on
       }
 
       IssueModel.find(filter, { project: 0, __v: 0 }, (err, docs) => {
@@ -133,8 +139,27 @@ module.exports = function (app) {
 
     // DELETE issue
     .delete(function (req, res) {
+      if (!req.body._id) {
+        return res.status(200).send({ error: 'missing _id' })
+      }
       const project = req.params.project;
+      const _id = req.body._id
 
+      IssueModel.findOneAndDelete({ project, _id }, (err, doc) => {
+        if (!doc) {
+          console.log(err)
+          res.status(200).send({
+            error: "could not delete",
+            _id: _id
+          })
+        } else {
+          res.status(200).send({ result: 'successfully deleted', _id: doc._id })
+        }
+      })
+
+        .catch(err => {
+          res.status(500).json(err)
+        })
     });
 
 };
